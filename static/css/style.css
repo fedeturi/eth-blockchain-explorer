@@ -1,0 +1,34 @@
+* {
+    color: black;
+}
+
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+}
+
+#hero {
+    background-image: url(https://soto.house.gov/sites/soto.house.gov/files/styles/congress_featured_image/public/featured_image/Retina_Display-758591537.jpg?itok=6xeGJ4HM);
+    filter: brightness(70%);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bg-primary {
+    background-color: #103847 !important;
+}
+
+.border-primary {
+    border-color: #103847 !important;
+}
+

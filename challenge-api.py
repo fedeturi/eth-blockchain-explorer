@@ -1,5 +1,3 @@
-from django.http import HttpResponse
-from django.shortcuts import render
 from typing import Optional
 from fastapi import FastAPI
 import time
@@ -9,7 +7,13 @@ from pprint import pprint
 import calendar
 import datetime
 
-def get_latest_block():
+from requests.models import HTTPError
+
+app = FastAPI()
+
+
+@app.get("/blocks-count")
+async def get_latest_block():
     
     URL = "https://api.etherscan.io/api"
     HEADERS = {
@@ -32,9 +36,11 @@ def get_latest_block():
         latest_block_num = response.json().get('result')
         return latest_block_num
     else:
-        pass
+        return "TODO error"
 
-def get_block_info(block_num):
+
+@app.get("/block-info/{block_num}")
+async def get_block_info(block_num):
     URL = "https://api.etherscan.io/api"
 
     HEADERS = {
@@ -57,7 +63,9 @@ def get_block_info(block_num):
     else:
         pass
 
-def get_address_tx_hist(address):
+
+@app.get("/address-tx-hist/{address}")
+async def get_address_tx_hist(address):
     URL = "https://api.etherscan.io/api"
     HEADERS = {
         'accept': 'application/json'
@@ -84,23 +92,3 @@ def get_address_tx_hist(address):
         return address_tx_list_result.get('result')
     else:
         pass
-
-latest_mined_block = get_latest_block()
-block_info = get_block_info(latest_mined_block)
-tx_list = get_address_tx_hist('0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a') 
-
-
-def index(request):
-    pprint(tx_list)
-    return render(request, 'index.html', {
-        'title': 'ETH Blockchain Explorer',
-        'cover_header': 'ETH Blockchain Explorer',
-        'cover_body': 'Explore the ETHEREUM Blockchain with this tool, using enhanced capabilities provided by ',
-        'main_cta': "Let's Go!",
-        'home': 'Home',
-        'stats': 'Latest Block Statistics',
-        'explorer': 'Explorer',
-        'latest_mined_block': latest_mined_block,
-        'latests_block_info': block_info,
-        'block_tx_list': tx_list
-    })
