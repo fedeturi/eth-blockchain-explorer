@@ -1,0 +1,181 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="h-100">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>{{title}}</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/cover/">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <style>
+        * {
+            color: black;
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        #hero {
+            background-image: url(https://soto.house.gov/sites/soto.house.gov/files/styles/congress_featured_image/public/featured_image/Retina_Display-758591537.jpg?itok=6xeGJ4HM);
+            filter: brightness(70%);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .bg-primary,
+        .btn-primary {
+            background-color: #103847 !important;
+        }
+
+        .border-primary,
+        .btn-primary {
+            border-color: #103847 !important;
+        }
+    </style>
+
+</head>
+
+<body class="d-flex flex-column text-center text-white">
+
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">{{home}}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#stats">{{stats}}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#explorer">{{explorer}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero" class="cover-container d-flex w-100 vh-100 p-3 mx-auto flex-column">
+        <header class="mb-auto">
+        </header>
+
+        <main class="px-3">
+            <h1 class="text-white">{{cover_header}}</h1>
+            <p class="lead text-white">{{cover_body}} <a href="https://docs.etherscan.io/" class="text-white"
+                    target="_blank">etherscan.io</a></p>
+            <p class="lead">
+                <a href="#stats"
+                    class="text-black btn btn-lg btn-secondary fw-bold border-white bg-white">{{main_cta}}</a>
+            </p>
+        </main>
+
+        <footer class="mt-auto">
+            <p class="text-white">by <a href="https://www.linkedin.com/in/fjbrun/" class="text-white"
+                    target="_blank">Federico Brun</a>
+                &copy {%now "Y"%}</p>
+        </footer>
+    </section>
+
+    <div id="stats"></div>
+
+    <h2 class="display-6 text-center mb-4 mt-5 text-black ">{{stats}}</h2>
+
+    <section class="row p-5 row-cols-1 row-cols-md-3 mb-3 text-center">
+
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                <div class="card-header py-3 bg-primary border-primary">
+                    <h4 class="my-0 fw-normal text-white">Total Blocks</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">{{latest_mined_block}}</h1>
+                    <small class="text-muted fw-light">37 txns in 20</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                <div class="card-header py-3 bg-primary border-primary">
+                    <h4 class="my-0 fw-normal text-white">Avg Gas Price</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">41 Gwei</h1>
+                    <small class="text-muted fw-light">($2.95)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                <div class="card-header py-3 bg-primary border-primary">
+                    <h4 class="my-0 fw-normal text-white">Transactions</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">1.283.59 M</h1>
+                    <small class="text-muted fw-light">(13.1 TPS)</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="explorer"></div>
+
+    <h2 class="display-6 text-center mb-4 mt-5 text-black ">{{explorer}}</h2>
+
+    <p class="lead">{{explorer_body}}</p>
+
+    <form method="POST" action="" class="row p-5">
+        {% csrf_token %}
+        <div class="form-group  d-flex flex-row align-items-center justify-content-lg-between">
+            <input type="text" name="address" class="form-control"
+                placeholder="Example: 0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a">
+
+            <button type="submit" class="ms-3 btn btn-primary">{{search}}</button>
+            </button>
+        </div>
+    </form>
+
+    <section class="row px-5 row-cols-1 row-cols-md-3 mb-3 text-center">
+
+        {% if block_tx_list %}
+            <ul class="list-group">
+                {% for tx in block_tx_list %}
+                <li class="list-group-item">
+                    {{tx}}
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-info w-100">
+                {{address_error}}
+            </div>
+        {% endif %}
+    </section>
+
+
+</body>
+
+</html>

@@ -1,5 +1,7 @@
+from django.db.models import base
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.contrib import messages
 from typing import Optional
 from fastapi import FastAPI
 import time
@@ -8,9 +10,13 @@ import requests
 from pprint import pprint
 import calendar
 import datetime
+from brownie import Wei
+
+from requests.api import get
+
 
 def get_latest_block():
-    
+
     URL = "https://api.etherscan.io/api"
     HEADERS = {
         'accept': 'application/json'
@@ -34,6 +40,7 @@ def get_latest_block():
     else:
         pass
 
+
 def get_block_info(block_num):
     URL = "https://api.etherscan.io/api"
 
@@ -48,14 +55,15 @@ def get_block_info(block_num):
         'boolean': 'true',
         'apikey': '4A824VS77HUTKMPJ6PUQPHIDUZPHMP2AHQ',
     }
-        
+
     response = requests.get(URL, headers=HEADERS, params=QUERYSET)
 
     if response.status_code == 200:
         full_block_info = response.json()
-        return full_block_info.get('result')
+        return full_block_info
     else:
         pass
+
 
 def get_address_tx_hist(address):
     URL = "https://api.etherscan.io/api"
@@ -76,22 +84,67 @@ def get_address_tx_hist(address):
         'sort': 'asc',
         'apikey': '4A824VS77HUTKMPJ6PUQPHIDUZPHMP2AHQ',
     }
-        
+
     response = requests.get(URL, headers=HEADERS, params=QUERYSET)
 
     if response.status_code == 200:
         address_tx_list_result = response.json()
-        return address_tx_list_result.get('result')
+        if address_tx_list_result.get('message') == 'OK':
+            return address_tx_list_result.get('result')
     else:
-        pass
+        return None
 
-latest_mined_block = get_latest_block()
-block_info = get_block_info(latest_mined_block)
-tx_list = get_address_tx_hist('0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a') 
+
+def get_eth_price():
+    URL = "https://api.etherscan.io/api"
+    HEADERS = {
+        'accept': 'application/json'
+    }
+
+    QUERYSET = {
+        'module': 'stats',
+        'action': 'ethprice',
+        'apikey': '4A824VS77HUTKMPJ6PUQPHIDUZPHMP2AHQ',
+    }
+
+    response = requests.get(URL, headers=HEADERS, params=QUERYSET)
+
+    if response.status_code == 200:
+        prices = response.json()
+        if prices.get('message') == 'OK':
+            eth_usd = prices.get('result').get('ethusd')
+            eth_btc = prices.get('result').get('ethbtc')
+            return eth_usd, eth_btc
+    else:
+        return None, None
 
 
 def index(request):
-    pprint(tx_list)
+
+    latest_mined_block = int(get_latest_block())
+    latest_mined_block_str = '{0:,d}'.format(latest_mined_block)
+    block_info = get_block_info(latest_mined_block).get('result')
+    block_tx_list = block_info.get('transactions')
+            
+    for tx in block_tx_list:
+        tx['value'] = Wei(int(tx.get('value'), base=16))
+    miner = block_info.get('miner')
+    print(type(miner))
+    difficulty = block_info.get('difficulty')
+
+    tx_count = len(block_tx_list)
+    tx_list = []
+    eth_usd , eth_btc = get_eth_price()
+
+    try:
+        if request.method == 'POST':
+            address = request.POST.get('address')
+            tx_list = get_address_tx_hist(address)
+        else:
+            raise ValueError()
+    except Exception as e:
+        print(e)
+
     return render(request, 'index.html', {
         'title': 'ETH Blockchain Explorer',
         'cover_header': 'ETH Blockchain Explorer',
@@ -99,8 +152,20 @@ def index(request):
         'main_cta': "Let's Go!",
         'home': 'Home',
         'stats': 'Latest Block Statistics',
-        'explorer': 'Explorer',
-        'latest_mined_block': latest_mined_block,
-        'latests_block_info': block_info,
-        'block_tx_list': tx_list
+        'stats_body': 'Latests mined block information and transactions list',
+        'block_tx_list': block_tx_list,        
+        'explorer': 'Address Explorer',
+        'explorer_body': 'Search by Address to see more details about its transactions. ',
+        'latest_mined_block': latest_mined_block_str,
+        'miner': miner,
+        'difficulty': difficulty,
+        'latst_block_tx_count': tx_count,
+        'search': 'Explore',
+        'address_error': 'Invalid Address. Please check it and try again.',
+        'eth_usd': eth_usd,
+        'eth_btc': eth_btc
     })
+
+
+def address_details(request):
+    pass

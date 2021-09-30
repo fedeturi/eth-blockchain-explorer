@@ -1,0 +1,10 @@
+<section class="row p-5 row-cols-1 row-cols-md-3 mb-3 text-center">
+    <ul class="list-group">
+
+        {% for tx in block_tx_list %}
+        <li class="list-group-item">
+            {{tx}}
+        </li>
+        {% endfor %}
+    </ul>
+</section>
