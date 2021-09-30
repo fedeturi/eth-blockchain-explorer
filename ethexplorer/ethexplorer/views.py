@@ -3,14 +3,13 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib import messages
 from typing import Optional
-from fastapi import FastAPI
 import time
 from typing import Mapping
 import requests
 from pprint import pprint
 import calendar
 import datetime
-from brownie import Wei
+import brownie
 
 from requests.api import get
 
@@ -127,19 +126,21 @@ def index(request):
     block_tx_list = block_info.get('transactions')
             
     for tx in block_tx_list:
-        tx['value'] = Wei(int(tx.get('value'), base=16))
+        tx['value'] = int(tx.get('value'), base=16)
     miner = block_info.get('miner')
-    print(type(miner))
-    difficulty = block_info.get('difficulty')
+    difficulty = '{0:,d}'.format(int(block_info.get('difficulty'), base=16))
 
     tx_count = len(block_tx_list)
     tx_list = []
-    eth_usd , eth_btc = get_eth_price()
+    eth_usd, eth_btc = get_eth_price()
+    address = ''
+    address_tx_count = 0
 
     try:
         if request.method == 'POST':
             address = request.POST.get('address')
             tx_list = get_address_tx_hist(address)
+            address_tx_count = len(tx_list)
         else:
             raise ValueError()
     except Exception as e:
@@ -153,7 +154,10 @@ def index(request):
         'home': 'Home',
         'stats': 'Latest Block Statistics',
         'stats_body': 'Latests mined block information and transactions list',
-        'block_tx_list': block_tx_list,        
+        'block_tx_list': block_tx_list,
+        'searched_address': address,
+        'address_tx_list': tx_list,
+        'address_tx_count': address_tx_count,
         'explorer': 'Address Explorer',
         'explorer_body': 'Search by Address to see more details about its transactions. ',
         'latest_mined_block': latest_mined_block_str,

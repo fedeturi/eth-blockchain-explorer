@@ -124,8 +124,10 @@
 
         <div class="col">
             <div class="card mb-4 rounded-3 shadow-sm border-primary">
-                <div class="card-header py-3 bg-primary border-primary">
-                    <h4 class="my-0 fw-normal text-white">Total Blocks</h4>
+                <div class="card-header py-3 bg-primary border-primary d-flex align-items-center justify-content-between">
+                    <h4 class="my-0 fw-normal text-white mr-3">Total Blocks</h4>
+                    <p class="text-white mb-0">(Click Update to refresh)</p>
+                    <button type="button" class="btn btn-secondary" onClick="window.location.reload();">Update</button>
                 </div>
                 <div class="card-body">
                     <h1 class="card-title pricing-card-title">{{latest_mined_block}}</h1>
@@ -188,7 +190,6 @@
                     <li class="list-group-item">
                         <p>
                             Tx: {{tx.hash}}
-                            {% load humanize %}
                             <br>Amount: {{ tx.value }} wei
                             <br>From: {{tx.from}} 
                             <br>To: {{tx.to}}
@@ -215,7 +216,7 @@
 
     <form method="POST" action="" class="row p-5">
         {% csrf_token %}
-        <div class="form-group  d-flex flex-row align-items-center justify-content-lg-between">
+        <div class="form-group d-flex flex-row align-items-center justify-content-lg-between">
             <input type="text" name="address" class="form-control"
                 placeholder="Example: 0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a">
 
@@ -224,21 +225,53 @@
         </div>
     </form>
 
-    <section class="row px-5 row-cols-1 row-cols-md-3 mb-3 text-center">
+    <section class="row container m-auto d-block px-5 row-cols-1 row-cols-md-3 mb-3 text-center">
+        <div class="row d-flex justify-content-center align-items-center w-100">
+            <div class="col-4">
+                <div class="col">
+                    <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                        <div class="card-header py-3 bg-primary border-primary">
+                            <h6 class="my-0 fw-normal text-white">Address</h6>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title pricing-card-title">{{searched_address}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                        <div class="card-header py-3 bg-primary border-primary">
+                            <h6 class="my-0 fw-normal text-white">Tx Count</h6>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title pricing-card-title">{{address_tx_count}} 'Normal' txns</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                {% if address_tx_list %}
+                <ul id="nav" class="list-group">
+                    {% for tx in address_tx_list %}
+                    <li class="list-group-item">
+                        <p>
+                            Blocknumber: {{tx.blockNumber}}
+                            <br>Tx: {{tx.hash}}
+                            <br>Amount: {{ tx.value }} wei
+                            <br>From: {{tx.from}}
+                            <br>To: {{tx.to}}
+                        </p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="alert alert-info w-100">
+                    {{address_error}}
+                </div>
+                {% endif %}
+            </div>
 
-        {% if block_tx_list %}
-        <ul class="list-group">
-            {% for tx in block_tx_list %}
-            <li class="list-group-item">
-                {{tx}}
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <div class="alert alert-info w-100">
-            {{address_error}}
         </div>
-        {% endif %}
     </section>
 
 
